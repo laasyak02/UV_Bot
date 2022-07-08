@@ -1,0 +1,34 @@
+<launch>
+		
+		
+
+
+
+ 
+		<!-- Start Google Cartographer node with custom configuration file-->
+    <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" args="
+          -configuration_directory
+              $(find uv_nav)/configuration_files
+          -configuration_basename backpack_2d.lua" output="screen">
+    </node>
+
+		
+    <node name="cartographer_occupancy_grid_node" pkg="cartographer_ros" type="cartographer_occupancy_grid_node" args="-resolution 0.05" />
+
+
+<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <rosparam file="$(find uv_nav)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find uv_nav)/param/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find uv_nav)/param/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find uv_nav)/param/global_costmap_params.yaml" command="load" />
+    <!--rosparam file="$(find uv_nav)/param/base_local_planner_params.yaml" command="load" /-->
+    <rosparam file="$(find uv_nav)/param/teb_local_planner.yaml" command="load" />
+    <rosparam file="$(find uv_nav)/param/move_base_params.yaml" command="load" />
+<!-- <remap from="/cmd_vel" to="/move_base/cmd_vel"/> -->
+
+  </node>
+<node name="serial_node"        pkg="rosserial_python"      type="serial_node.py">
+    <param name="port"              type="string"               value="/dev/ttyUSB1"/>
+    </node>
+
+</launch>
